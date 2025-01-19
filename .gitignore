@@ -1,8 +1,11 @@
-Binaries
-DerivedDataCache
-Intermediate
-Saved
-Build
+Binaries/
+DerivedDataCache/
+Intermediate/
+Saved/
+Build/
+
+.DS_Store
+Thumbs.db
 
 .vscode
 .vs
