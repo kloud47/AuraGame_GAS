@@ -14,12 +14,12 @@ class AURA_API UAuraUserWidget : public UUserWidget
 {
 	GENERATED_BODY()
 public:
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable)// Will be called in blueprint to assign WidgetController to Change Widget in HUD:
 	void SetWidgetController(UObject* InWidgetController);
 	
 	UPROPERTY(BlueprintReadOnly)
 	TObjectPtr<UObject> WidgetController;
 protected:
-	UFUNCTION(BlueprintImplementableEvent)
+	UFUNCTION(BlueprintImplementableEvent) // Will have a body in Blueprints:
 	void WidgetControllerSet();
 };
