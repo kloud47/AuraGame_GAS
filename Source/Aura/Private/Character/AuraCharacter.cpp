@@ -4,6 +4,7 @@
 #include "Character/AuraCharacter.h"
 
 #include "AbilitySystemComponent.h"
+#include "AbilitySystem/AuraAbilitySystemComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Player/AuraPlayerController.h"
 #include "Player/AuraPlayerState.h"
@@ -37,14 +38,19 @@ void AAuraCharacter::OnRep_PlayerState()
 	InitializeAbilityActorInfo();
 }
 
+int32 AAuraCharacter::GetPlayerLevel()
+{
+	AAuraPlayerState* AuraPS = GetPlayerState<AAuraPlayerState>();
+	check(AuraPS);
+	return AuraPS->GetPlayerLevel();
+}
+
 void AAuraCharacter::InitializeAbilityActorInfo()
 {
 	if (AAuraPlayerState* AuraPlayerState = GetPlayerState<AAuraPlayerState>())
 	{
-		// check(AuraPlayerState);
-		// const FString PlayerName = AuraPlayerState->GetPlayerName();
-		// UE_LOG(LogTemp, Log, TEXT("Player Name: %s"), *PlayerName);
 		AuraPlayerState->GetAbilitySystemComponent()->InitAbilityActorInfo(AuraPlayerState, this);
+		Cast<UAuraAbilitySystemComponent>(AuraPlayerState->GetAbilitySystemComponent())->AbilityActorInfoSet();// Because of this AuraAbilitySystem Does Not need to know about the AuraCharacter or Aura Enemy:
 		AbilitySystem = AuraPlayerState->GetAbilitySystemComponent();
 		AttributeSet = AuraPlayerState->GetAttributeSet();
 
@@ -55,5 +61,6 @@ void AAuraCharacter::InitializeAbilityActorInfo()
 				AuraHUD->InitOverlay(AuraPlayerController, AuraPlayerState, AbilitySystem, AttributeSet);
 			}
 		}
+		InitializeDefaultAttributes();
 	}
 }
