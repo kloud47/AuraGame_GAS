@@ -18,6 +18,10 @@ public:
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void OnRep_PlayerState() override;
 
+	FTimerHandle PlayerStateTimerHandle;
+
+	
+
 	/* Begin~ CombatInterface */
 	virtual int32 GetPlayerLevel() override;
 	/* End~ CombatInterface */
