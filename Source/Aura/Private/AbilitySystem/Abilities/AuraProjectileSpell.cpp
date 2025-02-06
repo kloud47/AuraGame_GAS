@@ -13,25 +13,31 @@ void UAuraProjectileSpell::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
-	const bool IsServer = HasAuthority(&ActivationInfo);
-	if (!IsServer) return;
+	
+}
 
-	ICombatInterface* CombatInterface = Cast<ICombatInterface>(GetAvatarActorFromActorInfo());
-	if (CombatInterface)
+void UAuraProjectileSpell::SpawnProjectile(const FVector& ProjectileTargetLocation)
+{
+	const bool IsServer = GetAvatarActorFromActorInfo()->HasAuthority();
+	if (!IsServer) return;
+	
+	if (ICombatInterface* CombatInterface = Cast<ICombatInterface>(GetAvatarActorFromActorInfo()))
 	{
 		const FVector SocketLocation =  CombatInterface->GetCombatSocketLocation();
+		FRotator Rotation = (ProjectileTargetLocation - SocketLocation).Rotation();
+		Rotation.Pitch = 0.f;
 
 		FTransform SpawnTransform;
 		SpawnTransform.SetLocation(SocketLocation);
-		// Set The Projectile Rotation:
+		SpawnTransform.SetRotation(Rotation.Quaternion());	
 		
-        AAuraProjectile* Projectile = GetWorld()->SpawnActorDeferred<AAuraProjectile>(
-        	ProjectileClass,
-        	SpawnTransform,
-        	GetOwningActorFromActorInfo(),
-        	Cast<APawn>(GetOwningActorFromActorInfo()),
-        	ESpawnActorCollisionHandlingMethod::AlwaysSpawn
-        	);
+		AAuraProjectile* Projectile = GetWorld()->SpawnActorDeferred<AAuraProjectile>(
+			ProjectileClass,
+			SpawnTransform,
+			GetOwningActorFromActorInfo(),
+			Cast<APawn>(GetOwningActorFromActorInfo()),
+			ESpawnActorCollisionHandlingMethod::AlwaysSpawn
+			);
 
 		// Give Projectile a gameplay Effect Spec for causing Damage:
 		
