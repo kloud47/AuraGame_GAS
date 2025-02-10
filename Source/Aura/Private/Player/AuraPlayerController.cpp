@@ -13,6 +13,9 @@
 #include "Components/SplineComponent.h"
 #include "Input/AuraInputComponent.h"
 #include "Interactions/TargetInterface.h"
+#include "GameFramework/Character.h"
+#include "UI/Widget/DamageTextComponent.h"
+
 
 AAuraPlayerController::AAuraPlayerController()
 {
@@ -28,6 +31,18 @@ void AAuraPlayerController::PlayerTick(float DeltaTime)
 	CursorTrace();
 
 	AutoRun(DeltaTime);
+}
+
+void AAuraPlayerController::ShowDamageNumber_Implementation(float DamageAmount, ACharacter* DamagedTargetCharacter)
+{
+	if (IsValid(DamagedTargetCharacter) && DamageTextComponentClass)
+	{
+		UDamageTextComponent* DamageText = NewObject<UDamageTextComponent>(DamagedTargetCharacter, DamageTextComponentClass);
+		DamageText->RegisterComponent();// since it will not happen on the server
+		DamageText->AttachToComponent(DamagedTargetCharacter->GetRootComponent(), FAttachmentTransformRules::KeepRelativeTransform);
+		DamageText->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
+		DamageText->SetDamageText(DamageAmount);// Call Blueprint Implemented Event:
+	}
 }
 
 void AAuraPlayerController::AutoRun(float DeltaTime)

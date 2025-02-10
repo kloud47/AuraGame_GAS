@@ -39,7 +39,7 @@ class AURA_API UOverlayWidgetController : public UAuraWidgetController
 	GENERATED_BODY()
 public:
 	virtual void BroadCastInitialValues() override;
-	virtual void BindCallbacksToDependencies() override;
+	virtual void BindCallbacksToDependencies() override;// Binding Below Delegates to Attribute value change Delegate:
 
 	/* For Displaying the values of the vital attributes --------------------- */
 	UPROPERTY(BlueprintAssignable, Category = "GAS|Attributes")

@@ -39,6 +39,7 @@ void AAuraProjectile::Destroyed()
 		UGameplayStatics::PlaySoundAtLocation(this, ImpactSound, GetActorLocation(), FRotator::ZeroRotator);
 		UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ImpactEffect, GetActorLocation());
 		LoopingSoundComponent->Stop();
+		LoopingSoundComponent->DestroyComponent();
 	}
 	Super::Destroyed();
 }
@@ -48,6 +49,7 @@ void AAuraProjectile::BeginPlay()
 	Super::BeginPlay();
 
 	SetLifeSpan(LifeSpan);
+	SetReplicateMovement(true);// Otherwise Looping components returns null in client side and crashes:
 	Sphere->OnComponentBeginOverlap.AddDynamic(this, &AAuraProjectile::OnSphereOverlap);
 
 	LoopingSoundComponent = UGameplayStatics::SpawnSoundAttached(LoopingSound, GetRootComponent());
@@ -60,6 +62,7 @@ void AAuraProjectile::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, 
 	UGameplayStatics::PlaySoundAtLocation(this, ImpactSound, GetActorLocation(), FRotator::ZeroRotator);
 	UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ImpactEffect, GetActorLocation());
 	LoopingSoundComponent->Stop();
+	LoopingSoundComponent->DestroyComponent();
 
 	if (HasAuthority())
 	{

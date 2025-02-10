@@ -48,6 +48,11 @@ struct FEffectProperties
 	GAMEPLAYATTRIBUTE_VALUE_SETTER(PropertyName) \
 	GAMEPLAYATTRIBUTE_VALUE_INITTER(PropertyName)
 
+// typedef is specific to the FGameplayAttribute() signature, but TStaticFuncPtr is generic to any signature chosen
+// typedef TBaseStaticDelegateInstance<FGameplayAttribute(), FDefaultDelegateUserPolicy>::FFuncPtr AttributeFuncPtr;
+template<class T>
+using TAttributePtr = typename TBaseStaticDelegateInstance<T, FDefaultDelegateUserPolicy>::FFuncPtr;
+
 UCLASS()
 class AURA_API UAuraAttributeSet : public UAttributeSet
 {
@@ -59,6 +64,10 @@ public:
 	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
 	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
 
+	// Function Pointers are being used below:->
+	TMap<FGameplayTag, TAttributePtr<FGameplayAttribute()>> TagsToAttributes;// Mapping Tags to Attributes using Delegate that returns the function (GetAttribute())
+	// TBaseStaticDelegateInstance<FGameplayAttribute(), FDefaultDelegateUserPolicy>::FFuncPtr FunctionPointer;// FGameplayAttribute(*)() // Instead of using Delegate Map Tags to Function Pointers
+
 	/* Begin~ Vital Attributes -------------------------------------------------------------------------------------- */
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Health, Category = "Vital Attributes")
 	FGameplayAttributeData Health;
@@ -68,6 +77,12 @@ public:
 	FGameplayAttributeData Mana;
 	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, Mana);
 	/* End~ Vital Attributes ---------------------------------------------------------------------------------------- */
+
+	/* Begin~ Meta Attributes ======================================================================================= */
+	UPROPERTY(BlueprintReadOnly, Category = "Meta Attributes")
+	FGameplayAttributeData IncomingDamage;
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, IncomingDamage);
+	/* End~ Meta Attributes ========================================================================================= */
 
 	/* Begin~ Primary Attribute ------------------------------------------------------------------------------------- */
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Strength, Category = "Primary Attributes")
@@ -180,5 +195,6 @@ public:
 	
 
 private:
-	void SetEffectProperties(const FGameplayEffectModCallbackData& Data, FEffectProperties& Props) const;	
+	void SetEffectProperties(const FGameplayEffectModCallbackData& Data, FEffectProperties& Props) const;
+	void ShowDamageText(const FEffectProperties& Props, float Damage) const;
 };

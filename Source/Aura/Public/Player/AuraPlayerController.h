@@ -6,6 +6,7 @@
 #include "GameFramework/PlayerController.h"
 #include "AuraPlayerController.generated.h"
 
+class UDamageTextComponent;
 class USplineComponent;
 class UAuraAbilitySystemComponent;
 struct FGameplayTag;
@@ -22,6 +23,10 @@ class AURA_API AAuraPlayerController : public APlayerController
 public:
 	AAuraPlayerController();
 	virtual void PlayerTick(float DeltaTime) override;
+
+	UFUNCTION(Client, Reliable)// Client RPC to show Damage Text on Client
+	void ShowDamageNumber(float DamageAmount, ACharacter* DamagedTargetCharacter);
+	
 protected:
 	virtual void BeginPlay() override;
 	virtual void SetupInputComponent() override;
@@ -74,4 +79,7 @@ private:
 	TObjectPtr<USplineComponent> Spline;
 
 	void AutoRun(float DeltaTime);
+
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UDamageTextComponent> DamageTextComponentClass;
 };
